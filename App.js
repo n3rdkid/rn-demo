@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Image, SafeAreaView, StyleSheet, View,Text, SectionList, ScrollView } from 'react-native';
+import { ActivityIndicator,FlatList, Image, SafeAreaView, StyleSheet, View,Text, ScrollView } from 'react-native';
 import {db} from "./config";
 export default function App() {
   const [shopItems,setShopItems]=useState([]);
@@ -32,14 +32,15 @@ export default function App() {
 
 
   const ShopItem = ({item})=>{
+    console.log("ITEM",item)
   const {imageUrl,name,price}=item;
   return  <View style={styles.itemWrapper} key={`${name}-${price}`}>
     <Image source={{
           uri: imageUrl,
         }}
         style={styles.itemImage}/>
-        <Text>{name}</Text>
-        <Text>{price}</Text>
+        <Text style={styles.itemName}>{name}</Text>
+        <Text style={styles.itemPrice}>{price}</Text>
   </View>
   }
   
@@ -55,13 +56,15 @@ export default function App() {
      <ScrollView>
       {shopItems.map(item=>{
        return <>
+
         <Text style={styles.title}>{item.title}</Text> 
-        <View style={styles.itemsWrapper}>
-          {item.data.map((shopItem,idx)=>{
-           return <ShopItem  key={`${shopItem.name}-${idx}`}  item={shopItem}/>})}
-       </View>
-        </>
-      })}
+        <FlatList
+    horizontal={true}
+    style={{flex:1}}
+    data={item.data}
+    renderItem={({item}) => <ShopItem key={`${item.name}-item`}  item={item}/>} />
+     </>
+      })} 
       </ScrollView>
   </SafeAreaView>
 )
@@ -81,8 +84,8 @@ const styles = StyleSheet.create({
     marginTop:16
   },
   itemImage:{
-    height:400,
-    width:300,
+    height:300,
+    width:250,
     resizeMode:"cover",
   },
   itemsWrapper:{
@@ -92,5 +95,13 @@ const styles = StyleSheet.create({
   },
   itemWrapper:{
     margin:16
+  },
+  itemName:{
+    marginTop:8,
+    marginBottom:8,
+    fontWeight:'bold'
+  },
+  itemPrice:{
+    color:"#323232"
   }
 });
