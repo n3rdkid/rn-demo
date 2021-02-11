@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Image, SafeAreaView, StyleSheet, View,Text, SectionList } from 'react-native';
+import { ActivityIndicator, Image, SafeAreaView, StyleSheet, View,Text, SectionList, ScrollView } from 'react-native';
 import {db} from "./config";
 export default function App() {
   const [shopItems,setShopItems]=useState([]);
@@ -33,15 +33,13 @@ export default function App() {
 
   const ShopItem = ({item})=>{
   const {imageUrl,name,price}=item;
-  return  <View>
-    {console.log(imageUrl)}
+  return  <View style={styles.itemWrapper} key={`${name}-${price}`}>
     <Image source={{
           uri: imageUrl,
         }}
-        height={200}
-        width={200}/>
-        {/* <Text>{name}</Text>
-        <Text>{price}</Text> */}
+        style={styles.itemImage}/>
+        <Text>{name}</Text>
+        <Text>{price}</Text>
   </View>
   }
   
@@ -51,25 +49,48 @@ export default function App() {
   </View>
   }
  
-  return (<SafeAreaView style={styles.container}>
-       <SectionList
-        sections={shopItems}
-        keyExtractor={(item, index) => { 
-          return item + index
-        }}
-        renderItem={({item})=> <ShopItem item={item}/>}
-        renderSectionHeader={({ section: { title } }) =>  <Text>{title}</Text>}
-      />
-    </SafeAreaView>)
-  
-
+  return (
+ 
+  <SafeAreaView style={styles.container}>
+     <ScrollView>
+      {shopItems.map(item=>{
+       return <>
+        <Text style={styles.title}>{item.title}</Text> 
+        <View style={styles.itemsWrapper}>
+          {item.data.map((shopItem,idx)=>{
+           return <ShopItem  key={`${shopItem.name}-${idx}`}  item={shopItem}/>})}
+       </View>
+        </>
+      })}
+      </ScrollView>
+  </SafeAreaView>
+)
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
+  header: {
+    fontSize: 32,
+    backgroundColor: "#fff"
+  },
+  title: {
+    fontSize: 24,
+    marginLeft:16,
+    marginTop:16
+  },
+  itemImage:{
+    height:400,
+    width:300,
+    resizeMode:"cover",
+  },
+  itemsWrapper:{
+    flex:1,
+    flexWrap:"wrap",
+    flexDirection:"row",
+  },
+  itemWrapper:{
+    margin:16
+  }
 });
